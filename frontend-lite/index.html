@@ -15,8 +15,33 @@
   <p id="out"></p>
 
 <script>
-const ABI = []; // TODO paste ABI
-const ADDR = "0x..."; // TODO replace
+const ABI = [
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_q",
+        "type": "string"
+      },
+      {
+        "internalType": "string[]",
+        "name": "_opts",
+        "type": "string[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_duration",
+        "type": "uint256"
+      }
+    ],
+    "name": "createPoll",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+]; // complète avec tous les objets ABI
+
+const ADDR = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
 let web3, account, ctr;
 
 async function out(t){document.getElementById('out').innerText=t;}

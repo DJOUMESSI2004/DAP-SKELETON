@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-/// @title Voting - simple poll-based voting contract (squelette)
+/// @title Voting - simple poll-based voting contract
 contract Voting {
     struct Poll {
         string question;
@@ -25,21 +25,38 @@ contract Voting {
     function createPoll(string calldata q, string[] calldata opts, uint dur) external {
         require(opts.length >= 2, "min 2 options");
 
-        // TODO: initialise struct and store in mapping
-        // polls[pollCount] = ...
-        // emit PollCreated(pollCount);
-        // pollCount++;
+        uint[] memory initVotes = new uint[](opts.length);
+
+        polls[pollCount] = Poll({
+            question: q,
+            options: opts,
+            votes: initVotes,
+            deadline: block.timestamp + dur,
+            owner: msg.sender
+        });
+
+        emit PollCreated(pollCount);
+        pollCount++;
     }
 
     /// @notice vote on a poll
     /// @param id poll id
     /// @param opt index of option
     function vote(uint id, uint opt) external {
-        // TODO: implement guards (deadline, double-vote, option bounds)
-        // TODO: record vote & emit event
+        Poll storage p = polls[id];
+
+        require(block.timestamp < p.deadline, "closed");
+        require(!voted[id][msg.sender], "already voted");
+        require(opt < p.options.length, "invalid option");
+
+        voted[id][msg.sender] = true;
+        p.votes[opt]++;
+        emit Voted(id, msg.sender, opt);
     }
 
     /// @notice view results
+    /// @param id poll id
+    /// @return array of votes per option
     function getResults(uint id) external view returns (uint[] memory) {
         return polls[id].votes;
     }
