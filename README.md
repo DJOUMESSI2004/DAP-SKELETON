@@ -1,14 +1,25 @@
-# dapp-skeleton
+# DApp Voting – Smart Contract on Sepolia
 
-Starter repository for the 4‑hour Voting DApp sprint.
+## Contrat déployé
+**Adresse :** `0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512`  
+Lien Etherscan : https://sepolia.etherscan.io/address/0x...
 
-## Structure
+## Frontend
+URL : https://mon-dapp-vote.netlify.app
 
-```
-contracts/          # Solidity code
-test/               # Hardhat tests
-scripts/            # deployment scripts
-frontend-lite/      # minimal HTML + Web3.js interface
-```
+##  Installation & Lancement
 
-Follow the workshop instructions to complete TODOs, deploy on Sepolia and record your demo.
+```bash
+git clone https://github.com/DJOUMESSI2004/DAP-SKELETON.git
+cd dapp-voting
+npm install
+cp .env.example .env
+# Remplis .env avec :
+# SEPOLIA_URL=...
+# PRIVATE_KEY=...
+
+npx hardhat compile
+npx hardhat run scripts/deploy.js --network sepolia
+
+cd frontend-lite
+live-server .

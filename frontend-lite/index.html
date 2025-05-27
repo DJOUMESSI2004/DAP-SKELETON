@@ -4,64 +4,88 @@
   <meta charset="UTF-8">
   <title>Voting DApp (lite)</title>
   <script src="https://cdn.jsdelivr.net/npm/web3@1.7.0/dist/web3.min.js"></script>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    button { margin: 5px; padding: 10px; }
+    #out { margin-top: 20px; font-weight: bold; }
+  </style>
 </head>
 <body>
   <h1>Voting DApp</h1>
+
   <button id="connect">Connect wallet</button>
-  <br><br>
   <button id="create">Create sample poll</button>
-  <br><br>
   <button id="vote">Vote option 0</button>
+  <button id="results">Show results</button>
+
   <p id="out"></p>
 
 <script>
 const ABI = [
   {
     "inputs": [
-      {
-        "internalType": "string",
-        "name": "_q",
-        "type": "string"
-      },
-      {
-        "internalType": "string[]",
-        "name": "_opts",
-        "type": "string[]"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_duration",
-        "type": "uint256"
-      }
+      { "internalType": "string", "name": "_q", "type": "string" },
+      { "internalType": "string[]", "name": "_opts", "type": "string[]" },
+      { "internalType": "uint256", "name": "_duration", "type": "uint256" }
     ],
     "name": "createPoll",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
-]; // complète avec tous les objets ABI
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "id", "type": "uint256" },
+      { "internalType": "uint256", "name": "opt", "type": "uint256" }
+    ],
+    "name": "vote",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "id", "type": "uint256" }
+    ],
+    "name": "getResults",
+    "outputs": [
+      { "internalType": "uint256[]", "name": "", "type": "uint256[]" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+];
 
+// ⚠️ Remplace cette adresse par celle retournée par Hardhat (contrat déployé sur Sepolia)
 const ADDR = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
+
 let web3, account, ctr;
 
-async function out(t){document.getElementById('out').innerText=t;}
+async function out(t) {
+  document.getElementById('out').innerText = t;
+}
 
-document.getElementById('connect').onclick = async ()=>{
-  await window.ethereum.request({method:'eth_requestAccounts'});
+document.getElementById('connect').onclick = async () => {
+  await window.ethereum.request({ method: 'eth_requestAccounts' });
   web3 = new Web3(window.ethereum);
-  [account]= await web3.eth.getAccounts();
+  [account] = await web3.eth.getAccounts();
   ctr = new web3.eth.Contract(ABI, ADDR);
-  out("Connected: "+account);
+  out("Connected: " + account);
 };
 
-document.getElementById('create').onclick = async ()=>{
-  await ctr.methods.createPoll("Tea?",["Yes","No"],3600).send({from:account});
+document.getElementById('create').onclick = async () => {
+  await ctr.methods.createPoll("Tea?", ["Yes", "No"], 3600).send({ from: account });
   out("Poll created!");
 };
 
-document.getElementById('vote').onclick = async ()=>{
-  await ctr.methods.vote(0,0).send({from:account});
+document.getElementById('vote').onclick = async () => {
+  await ctr.methods.vote(0, 0).send({ from: account });
   out("Voted!");
+};
+
+document.getElementById('results').onclick = async () => {
+  const res = await ctr.methods.getResults(0).call();
+  out("Résultats: " + res.join(", "));
 };
 </script>
 </body>
